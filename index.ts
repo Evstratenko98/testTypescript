@@ -20,13 +20,4 @@ enum Direction {
 type typeDirection = keyof typeof Direction
 const valueDirection: typeDirection = 'Down'
 
-let date1: Date = new Date()
-let date2: Date = new Date()
-
-setTimeout(() => {
-    date2 = new Date('2022-01-15')
-    console.log(date1 > date2)
-}, 1000)
-
-
-
+import './patterns/bridge';
