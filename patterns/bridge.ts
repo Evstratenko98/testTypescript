@@ -4,12 +4,22 @@ export enum Exploitation {
   KILO = 2,
 }
 
-interface localeConverter {
+interface LocaleConverter {
   downscaling(volume: number): number;
   upscaling(volume: number): number;
 }
 
-class rubblesConverter implements localeConverter {
+class NoneConverter implements LocaleConverter {
+  downscaling(volume: number): number {
+    return volume;
+  }
+
+  upscaling(volume: number): number {
+    return volume;
+  }
+}
+
+class RubblesConverter implements LocaleConverter {
   downscaling(volume: number): number {
     return volume * 100;
   }
@@ -19,7 +29,7 @@ class rubblesConverter implements localeConverter {
   }
 }
 
-class hoursConverter implements localeConverter {
+class HoursConverter implements LocaleConverter {
   downscaling(volume: number): number {
     return volume * 60;
   }
@@ -29,7 +39,7 @@ class hoursConverter implements localeConverter {
   }
 }
 
-class kilometerConverter implements localeConverter {
+class KilometerConverter implements LocaleConverter {
   downscaling(volume: number): number {
     return volume * 1000;
   }
@@ -39,7 +49,7 @@ class kilometerConverter implements localeConverter {
   }
 }
 
-class milesConverter implements localeConverter {
+class MilesConverter implements LocaleConverter {
   downscaling(volume: number): number {
     return volume * 1609;
   }
@@ -49,30 +59,25 @@ class milesConverter implements localeConverter {
   }
 }
 
-type ChoiseConverters = rubblesConverter | hoursConverter | kilometerConverter | milesConverter
+const converterMatching = {
+  [Exploitation.NONE]: new NoneConverter(),
+  [Exploitation.HOURS]: new HoursConverter(),
+  [Exploitation.KILO]: new KilometerConverter(),
+}
 
-class Converter {
-  exploitation: Exploitation | null;
-  mainConverter: ChoiseConverters | null
+class Converter implements LocaleConverter {
+  private exploitation: Exploitation;
   constructor(exploitation: Exploitation) {
-    this.exploitation = null;
-    this.mainConverter = null;
-
-    switch (exploitation) {
-      case Exploitation.KILO:
-        this.mainConverter = new kilometerConverter();
-      case Exploitation.HOURS:
-        this.mainConverter = new hoursConverter();  
-      default:
-        throw "Wrong exploitation selected";
-    }
+    this.exploitation = exploitation;
   }
 
   downscaling(volume: number): number {
-    return this.mainConverter!.downscaling(volume);
+    return converterMatching[this.exploitation].downscaling(volume)
   }
 
   upscaling(volume: number): number {
-    return this.mainConverter!.upscaling(volume);
+    return converterMatching[this.exploitation].upscaling(volume)
   }
 }
+
+const conv = new Converter(Exploitation.KILO)

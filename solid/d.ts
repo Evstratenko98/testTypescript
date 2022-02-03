@@ -37,7 +37,7 @@ class VKMusicApi implements MusicApi {
 }
 
 
-// Мы работаем только с нашей асбтакцией, не завтрагивая основные модули
+// Мы работаем только с нашей абстракцией, не завтрагивая основные модули
 const MusicApp = () => {
     const API = new MusicClient(new SpotifyApi())
 
