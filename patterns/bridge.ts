@@ -1,3 +1,5 @@
+import currency from "currency.js";
+
 export enum Exploitation {
   NONE = 0,
   HOURS = 1,
@@ -30,22 +32,33 @@ class RubblesConverter implements LocaleConverter {
 }
 
 class HoursConverter implements LocaleConverter {
-  downscaling(volume: number): number {
-    return volume * 60;
+    downscaling(volume: number): number {
+    const integer: number = Math.trunc(volume);
+    const decimal = Number(volume.toString().split('.')[1]);
+
+    return currency(integer).multiply(60).add(decimal).value;
   }
 
   upscaling(volume: number): number {
-    return volume / 60;
+    const minutes: number = volume % 60;
+    const minutesInTwoDigits: string =
+      minutes.toString().length === 1 ? '0' + minutes : minutes.toString();
+    const hours: string = currency(volume)
+      .subtract(minutes)
+      .divide(60)
+      .value.toString();
+
+    return Number(hours + '.' + minutesInTwoDigits);
   }
 }
 
 class KilometerConverter implements LocaleConverter {
   downscaling(volume: number): number {
-    return volume * 1000;
+    return currency(volume, { precision: 3 }).multiply(1000).value;
   }
 
   upscaling(volume: number): number {
-    return volume / 1000;
+    return currency(volume, { precision: 3 }).divide(1000).value;
   }
 }
 
@@ -80,4 +93,4 @@ class Converter implements LocaleConverter {
   }
 }
 
-const conv = new Converter(Exploitation.KILO)
+const conv = new Converter(Exploitation.HOURS)
