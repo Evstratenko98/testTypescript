@@ -41,6 +41,5 @@ class VKMusicApi implements MusicApi {
 const MusicApp = () => {
     const API = new MusicClient(new SpotifyApi())
 
-    API.getTracks()
+    API.client.getTracks()
 }
-
